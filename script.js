@@ -1,32 +1,63 @@
 /* ================= DOM READY ================= */
 document.addEventListener("DOMContentLoaded", () => {
 
-/* ===== NAV FADE TRANSITION ===== */
+    /* ================= PROFILE 3D TILT ================= */
+    const imageWrapper = document.querySelector(".image-wrapper");
 
-document.querySelectorAll(".nav-links a").forEach(link => {
-    link.addEventListener("click", function (e) {
+    if (imageWrapper) {
+        imageWrapper.addEventListener("mousemove", (e) => {
+            const rect = imageWrapper.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
 
-        e.preventDefault();
+            const centerX = rect.width / 2;
+            const centerY = rect.height / 2;
 
-        const targetId = this.getAttribute("href");
-        const targetSection = document.querySelector(targetId);
+            const rotateX = -(y - centerY) / 20;
+            const rotateY = (x - centerX) / 20;
 
-        document.body.classList.add("fade-transition");
+            imageWrapper.style.transform =
+                `rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+        });
 
-        setTimeout(() => {
-            targetSection.scrollIntoView({ behavior: "smooth" });
+        imageWrapper.addEventListener("mouseleave", () => {
+            imageWrapper.style.transform = "rotateX(0deg) rotateY(0deg)";
+        });
+    }
+
+    /* ================= NAVBAR SCROLL EFFECT ================= */
+    const navbar = document.querySelector(".navbar");
+
+    window.addEventListener("scroll", () => {
+        if (window.scrollY > 50) {
+            navbar.classList.add("scrolled");
+        } else {
+            navbar.classList.remove("scrolled");
+        }
+    });
+
+    /* ================= NAV FADE TRANSITION ================= */
+    document.querySelectorAll(".nav-links a").forEach(link => {
+        link.addEventListener("click", function (e) {
+            e.preventDefault();
+
+            const targetId = this.getAttribute("href");
+            const targetSection = document.querySelector(targetId);
+
+            document.body.classList.add("fade-transition");
 
             setTimeout(() => {
-                document.body.classList.remove("fade-transition");
-            }, 400);
+                targetSection.scrollIntoView({ behavior: "smooth" });
 
-        }, 200);
-
+                setTimeout(() => {
+                    document.body.classList.remove("fade-transition");
+                }, 400);
+            }, 200);
+        });
     });
-});
 
+    document.body.classList.add("page-loaded");
 
-document.body.classList.add("page-loaded");
     /* ================= HAMBURGER ================= */
     const hamburger = document.querySelector(".hamburger");
     const navLinks = document.querySelector(".nav-links");
@@ -35,7 +66,6 @@ document.body.classList.add("page-loaded");
         navLinks.classList.toggle("active");
     });
 
-    // Auto close menu when link clicked (mobile improvement)
     document.querySelectorAll(".nav-links a").forEach(link => {
         link.addEventListener("click", () => {
             navLinks.classList.remove("active");
@@ -44,6 +74,7 @@ document.body.classList.add("page-loaded");
 
     /* ================= CURSOR GLOW ================= */
     const cursorGlow = document.querySelector(".cursor-glow");
+
     document.addEventListener("mousemove", (e) => {
         cursorGlow.style.left = e.clientX + "px";
         cursorGlow.style.top = e.clientY + "px";
@@ -65,12 +96,14 @@ document.body.classList.add("page-loaded");
         if (!isDeleting) {
             typingElement.textContent = currentRole.substring(0, charIndex + 1);
             charIndex++;
+
             if (charIndex === currentRole.length) {
                 setTimeout(() => isDeleting = true, 1000);
             }
         } else {
             typingElement.textContent = currentRole.substring(0, charIndex - 1);
             charIndex--;
+
             if (charIndex === 0) {
                 isDeleting = false;
                 roleIndex = (roleIndex + 1) % roles.length;
@@ -138,4 +171,16 @@ document.body.classList.add("page-loaded");
 if ('scrollRestoration' in history) {
     history.scrollRestoration = 'manual';
 }
+
 window.onload = () => window.scrollTo(0, 0);
+
+/* ================= SCROLL PROGRESS ================= */
+const progressBar = document.getElementById("scroll-progress");
+
+window.addEventListener("scroll", () => {
+    const scrollTop = window.scrollY;
+    const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+    const scrollPercent = (scrollTop / docHeight) * 100;
+
+    progressBar.style.width = scrollPercent + "%";
+});
